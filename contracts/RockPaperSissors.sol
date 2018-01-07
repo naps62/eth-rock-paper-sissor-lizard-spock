@@ -10,7 +10,9 @@ contract RockPaperSissors {
   enum Move {
     Rock,
     Paper,
-    Sissor
+    Sissor,
+    Lizard,
+    Spock
   }
 
   mapping(bytes32 => bool) public winningPairs;
@@ -24,10 +26,24 @@ contract RockPaperSissors {
 
   Player[] public players;
 
+  // is there a way to make this static instead of evaluating on every deploy?
+  // seems like a waste of gas
   function RockPaperSissors() {
-    winningPairs[keccak256(Move.Paper, Move.Rock)] = true;
-    winningPairs[keccak256(Move.Rock, Move.Sissor)] = true;
-    winningPairs[keccak256(Move.Sissor, Move.Paper)] = true;
+    addWinningPair(Move.Sissor, Move.Paper);
+    addWinningPair(Move.Paper, Move.Rock);
+    addWinningPair(Move.Rock, Move.Lizard);
+    addWinningPair(Move.Lizard, Move.Spock);
+    addWinningPair(Move.Spock, Move.Sissor);
+    addWinningPair(Move.Lizard, Move.Paper);
+    addWinningPair(Move.Paper, Move.Spock);
+    addWinningPair(Move.Spock, Move.Rock);
+    addWinningPair(Move.Rock, Move.Sissor);
+  }
+
+  function addWinningPair(Move move1, Move move2)
+  private
+  {
+    winningPairs[keccak256(move1, move2)] = true;
   }
 
   function play(bytes32 encryptedMove)
@@ -98,7 +114,7 @@ contract RockPaperSissors {
       msg.sender.transfer(ENTRANCE_FEE);
     }
 
-    returns true;
+    return true;
   }
 
 

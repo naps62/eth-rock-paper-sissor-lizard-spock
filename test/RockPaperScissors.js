@@ -22,7 +22,9 @@ contract("RockPaperSissors", accounts => {
   const Move = {
     Rock: 0,
     Paper: 1,
-    Sissor: 2
+    Sissor: 2,
+    Lizard: 3,
+    Spock: 4
   };
 
   const encryptedMove = async (m, salt) => await contract.getHash(m, salt);
@@ -93,17 +95,17 @@ contract("RockPaperSissors", accounts => {
     }
   });
 
-  it.only("selects the correct winner in a rock vs paper game", async () => {
+  it("selects the correct winner in a rock vs paper game", async () => {
     await contract.play(await encryptedMove(Move.Rock, aliceSalt), { from: alice, value: fee });
     await contract.play(await encryptedMove(Move.Paper, bobSalt), { from: bob, value: fee });
 
     await contract.reveal(Move.Rock, aliceSalt, { from: alice });
     await contract.reveal(Move.Paper, bobSalt, { from: bob });
 
-    assert.equal(await contract.Winner(), bob);
+    assert.equal(await contract.getWinner(), bob);
   });
 
-  it.only("selects the correct winner in a paper vs rock game", async () => {
+  it("selects the correct winner in a paper vs rock game", async () => {
     // reverse order than the one above
     await contract.play(await encryptedMove(Move.Paper, bobSalt), { from: bob, value: fee });
     await contract.play(await encryptedMove(Move.Rock, aliceSalt), { from: alice, value: fee });
@@ -111,7 +113,18 @@ contract("RockPaperSissors", accounts => {
     await contract.reveal(Move.Paper, bobSalt, { from: bob });
     await contract.reveal(Move.Rock, aliceSalt, { from: alice });
 
-    assert.equal(await contract.Winner(), bob);
+    assert.equal(await contract.getWinner(), bob);
+  });
+
+  it("knows that paper disproves spock", async () => {
+    // reverse order than the one above
+    await contract.play(await encryptedMove(Move.Paper, bobSalt), { from: bob, value: fee });
+    await contract.play(await encryptedMove(Move.Spock, aliceSalt), { from: alice, value: fee });
+
+    await contract.reveal(Move.Paper, bobSalt, { from: bob });
+    await contract.reveal(Move.Spock, aliceSalt, { from: alice });
+
+    assert.equal(await contract.getWinner(), bob);
   });
 
   it("can find draws", async () => {
@@ -121,6 +134,6 @@ contract("RockPaperSissors", accounts => {
     await contract.reveal(Move.Paper, bobSalt, { from: bob });
     await contract.reveal(Move.Paper, aliceSalt, { from: alice });
 
-    assert.equal(await contract.Winner(), 0);
+    assert.equal(await contract.getWinner(), 0);
   });
 });
