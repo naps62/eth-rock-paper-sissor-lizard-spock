@@ -1,0 +1,20 @@
+{
+  "name": "eth-remittance",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "es6-promisify": "^5.0.0",
+    "lodash": "^4.17.4",
+    "solidity-sha3": "^0.4.1"
+  }
+}
