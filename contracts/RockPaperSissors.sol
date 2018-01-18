@@ -1,10 +1,6 @@
 pragma solidity ^0.4.17;
 
-import "./strings.sol";
-
 contract RockPaperSissors {
-  using strings for *;
-
   uint public constant ENTRANCE_FEE = 0.1 ether;
 
   enum Move {
@@ -28,7 +24,9 @@ contract RockPaperSissors {
 
   // is there a way to make this static instead of evaluating on every deploy?
   // seems like a waste of gas
-  function RockPaperSissors() {
+  function RockPaperSissors()
+  public
+  {
     addWinningPair(Move.Sissor, Move.Paper);
     addWinningPair(Move.Paper, Move.Rock);
     addWinningPair(Move.Rock, Move.Lizard);
@@ -63,13 +61,13 @@ contract RockPaperSissors {
     return true;
   }
 
-  function reveal(Move move, string salt)
+  function reveal(Move move, bytes32 salt)
   public
   returns (bool success)
   {
     require(players.length == 2);
     uint playerIndex = findPlayerIndex(msg.sender);
-    require(playerIndex >= 0 && playerIndex < 2);
+    require(playerIndex < 2);
     bytes32 hash = getHash(move, salt);
 
     require(players[playerIndex].encryptedMove == hash);
@@ -104,7 +102,7 @@ contract RockPaperSissors {
   returns (bool success)
   {
     uint playerIndex = findPlayerIndex(msg.sender);
-    require(playerIndex >= 0 && playerIndex < 0);
+    require(playerIndex < 0);
 
     address winner = getWinner();
 
@@ -132,7 +130,7 @@ contract RockPaperSissors {
     }
   }
 
-  function getHash(Move move, string salt)
+  function getHash(Move move, bytes32 salt)
   public
   pure
   returns (bytes32)
